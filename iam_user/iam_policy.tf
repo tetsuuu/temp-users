@@ -20,13 +20,34 @@ data "aws_iam_policy_document" "change_passwod" {
   }
 }
 
-module "change_password" {
-  source = "../modules/iam_policy"
+data "aws_iam_policy_document" "switch_admin" {
+  statement {
+    effect = "Allow"
 
-  name        = "change_password"
-  description = "for change user password"
+    actions = [
+      "sts:AssumeRole",
+    ]
+    // TODO
+    resources = [
+      "arn:aws:iam::PROD_ID:role/adminSwitchRole",
+      "arn:aws:iam::STG_ID:role/adminSwitchRole",
+    ]
+  }
+}
 
-  policy = data.aws_iam_policy_document.change_passwod.json
+data "aws_iam_policy_document" "switch_developer" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "sts:AssumeRole",
+    ]
+    // TODO
+    resources = [
+      "arn:aws:iam::PROD_ID:role/developerSwitchRole",
+      "arn:aws:iam::STG_ID:role/developerSwitchRole",
+    ]
+  }
 }
 
 data "aws_iam_policy_document" "iam_pass_role_access" {
@@ -43,6 +64,15 @@ data "aws_iam_policy_document" "iam_pass_role_access" {
   }
 }
 
+module "change_password" {
+  source = "../modules/iam_policy"
+
+  name        = "change_password"
+  description = "for change user password"
+
+  policy = data.aws_iam_policy_document.change_passwod.json
+}
+
 module "iam_pass_role_access" {
   source = "../modules/iam_policy"
 
@@ -50,4 +80,22 @@ module "iam_pass_role_access" {
   description = "for attach Iam Role"
 
   policy = data.aws_iam_policy_document.iam_pass_role_access.json
+}
+
+module "switch_admin" {
+  source = "../modules/iam_policy"
+
+  name        = "adminSwitchPolicy"
+  description = "for swich staging and production by admin user"
+
+  policy = data.aws_iam_policy_document.switch_admin.json
+}
+
+module "switch_developer" {
+  source = "../modules/iam_policy"
+
+  name        = "developerSwitchPolicy"
+  description = "for swich staging and production by power user"
+
+  policy = data.aws_iam_policy_document.switch_developer.json
 }
