@@ -1,5 +1,5 @@
 import { Construct, Stack, StackProps }  from '@aws-cdk/core';
-import { Group, Policy, PolicyStatement, ManagedPolicy, User, AccountPrincipal } from '@aws-cdk/aws-iam';
+import { Group, Policy, PolicyStatement, ManagedPolicy, User } from '@aws-cdk/aws-iam';
 
 const admins = 'adminGroup';
 const adminUsers = [
